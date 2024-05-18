@@ -15,7 +15,7 @@ const SearchComponent = () => {
     const handleSearch = async () => {
         setLoading(true);
         setNoResults(false);
-        const response = await fetch(`http://www.omdbapi.com/?s=${searchTerm}&apikey=eafd305d`);
+        const response = await fetch(`https://www.omdbapi.com/?s=${searchTerm}&apikey=eafd305d`);
         const data = await response.json();
         setLoading(false);
 

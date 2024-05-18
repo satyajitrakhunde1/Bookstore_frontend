@@ -8,7 +8,7 @@ function MovieDetailsComponent() {
   const [movie, setMovie] = useState(null);
 
   useEffect(() => {
-    fetch(`http://www.omdbapi.com/?i=${id}&apikey=eafd305d`)
+    fetch(`https://www.omdbapi.com/?i=${id}&apikey=eafd305d`)
       .then((response) => response.json())
       .then((data) => setMovie(data));
   }, [id]);
