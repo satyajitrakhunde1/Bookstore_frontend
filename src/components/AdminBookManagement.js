@@ -20,7 +20,7 @@ const AdminBookManagement = () => {
 
     const fetchBooks = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/books', {
+            const response = await fetch('https://bookstore-backend-j7tp.onrender.com/api/books', {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${user.token}`
@@ -43,7 +43,7 @@ const AdminBookManagement = () => {
 
     const handleAddBook = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/books', {
+            const response = await fetch('https://bookstore-backend-j7tp.onrender.com/api/books', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ const AdminBookManagement = () => {
 
     const handleDeleteBook = async (id) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/books/${id}`, {
+            const response = await fetch(`https://bookstore-backend-j7tp.onrender.com/api/books/${id}`, {
                 method: 'DELETE',
                 headers: {
                     Authorization: `Bearer ${user.token}`
