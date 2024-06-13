@@ -1,4 +1,3 @@
-// RegisterComponent.js
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../App';
@@ -6,34 +5,53 @@ import './styles.css';
 
 const RegisterComponent = () => {
     const { setUser } = useContext(UserContext);
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleRegister = () => {
-        if (!email || !password) {
+    // Debugging environment variable
+    console.log('API URL:', process.env.REACT_APP_API_URL);
+
+    const handleRegister = async () => {
+        if (!name || !email || !password) {
             setError('Please fill in all fields');
             return;
         }
 
-        const users = JSON.parse(localStorage.getItem('users')) || {};
-        if (users[email]) {
-            setError('Email already registered');
-            return;
-        }
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, email, password })
+            });
 
-        users[email] = { email, password };
-        localStorage.setItem('users', JSON.stringify(users));
-        localStorage.setItem('currentUser', JSON.stringify({ email }));
-        setUser({ email });
-        navigate('/search');
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.message || 'Registration failed');
+            }
+
+            const data = await response.json();
+            setUser({ email: data.email });
+            navigate('/search');
+        } catch (error) {
+            setError(error.message);
+        }
     };
 
     return (
         <div className="auth-container">
             <h1>Register</h1>
             {error && <p className="error">{error}</p>}
+            <input
+                type="text"
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+            />
             <input
                 type="email"
                 placeholder="Email"

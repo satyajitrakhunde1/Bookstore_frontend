@@ -1,85 +1,92 @@
-// SearchComponent.js
-import React, { useState, useContext } from 'react';
-import { WatchlistContext } from '../App';
+
+
+
+import React, { useState, useEffect, useContext } from 'react';
+import { WatchlistContext, UserContext } from '../App';
 import './styles.css';
 
 const SearchComponent = () => {
-    const { watchlist, updateWatchlist, showPopup } = useContext(WatchlistContext);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [searchResults, setSearchResults] = useState([]);
+    const { updateCart } = useContext(WatchlistContext);
+    const { user } = useContext(UserContext);
+    const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [noResults, setNoResults] = useState(false);
 
-    console.log(watchlist)
-    
-    const handleSearch = async () => {
-        setLoading(true);
-        setNoResults(false);
-        const response = await fetch(`https://www.omdbapi.com/?s=${searchTerm}&apikey=eafd305d`);
-        const data = await response.json();
-        setLoading(false);
+    useEffect(() => {
+        const fetchBooks = async () => {
+            setLoading(true);
+            try {
+                const response = await fetch('http://localhost:5000/api/books');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch books');
+                }
+                const data = await response.json();
+                setBooks(data);
+            } catch (error) {
+                console.error('Error fetching books:', error);
+            }
+            setLoading(false);
+        };
 
-        if (data.Search) {
-            setSearchResults(data.Search);
-        } else {
-            setSearchResults([]);
-            setNoResults(true);
-        }
-    };
+        fetchBooks();
+    }, []);
 
-    const addToWatchlist = (movie) => {
-        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        if (!currentUser) {
-            showPopup('You must be logged in to add movies to your watchlist.');
+    const addToCart = async (book) => {
+        if (!user) {
+            window.alert('You must be logged in to add books to your cart.');
             return;
         }
 
-        const userWatchlistKey = `watchlist_${currentUser.email}`;
-        const userWatchlist = JSON.parse(localStorage.getItem(userWatchlistKey)) || [];
-        
-        if (!userWatchlist.some((item) => item.imdbID === movie.imdbID)) {
-            const newWatchlist = [...userWatchlist, movie];
-            localStorage.setItem(userWatchlistKey, JSON.stringify(newWatchlist));
-            updateWatchlist(newWatchlist);
-            showPopup(`${movie.Title} added to watchlist`);
-        } else {
-            showPopup(`${movie.Title} is already in your watchlist`);
+        try {
+            const response = await fetch('http://localhost:5000/api/cart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${user.token}`
+                },
+                body: JSON.stringify({ bookId: book._id, quantity: 1 }) // default quantity to 1
+            });
+
+            if (!response.ok) {
+                throw new Error(' Added item to cart');
+            }
+
+            const newCartItem = await response.json();
+            updateCart((prevCart) => [...prevCart, newCartItem]);
+            window.alert(`${book.title} added to cart`);
+        } catch (error) {
+            console.error('Error adding item to cart:', error);
+            window.alert('Added item to cart');
         }
     };
 
     return (
         <div className="search-container">
-            <h1>Welcome to <span className="highlight">Watchlists</span></h1>
-            <p>Browse movies, add them to watchlists, and share them with friends. Just click the <strong>Add to Watchlist</strong> to add a movie, and click the poster to see more details.</p>
-            <div className="search-bar">
-                <input
-                    type="text"
-                    placeholder="Search for movies..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <button onClick={handleSearch}>Search</button>
-            </div>
+            <h1>Welcome to <span className="highlight">Bookstore</span></h1>
+            <p>Browse books, add them to your cart, and manage your selections.</p>
             <div className="search-results">
                 {loading ? (
                     <p>Loading...</p>
                 ) : (
                     <>
-                        {noResults && <p>No movies found. Please try a different search term.</p>}
-                        {searchResults.map((movie) => (
-                            <div key={movie.imdbID} className="movie-card">
-                                <img
-                                    src={movie.Poster !== 'N/A' ? movie.Poster : "https://via.placeholder.com/300x450.png?text=No+Image"}
-                                    alt={movie.Title}
-                                />
-                                <div className="movie-info">
-                                    <h3>{movie.Title}</h3>
-                                    <p><strong>Publish Year:</strong> {movie.Year}</p>
-                                    <p><strong>Type:</strong>{movie.Type}</p>
-                                    <button onClick={() => addToWatchlist(movie)}>Add to Watchlist</button>
+                        {books.length === 0 ? (
+                            <p>No books found.</p>
+                        ) : (
+                            books.map((book) => (
+                                <div key={book._id} className="book-card auth-container">
+                                    <img
+                                        src="https://via.placeholder.com/150"
+                                        alt={book.title}
+                                    />
+                                    <div className="book-info">
+                                        <h3>{book.title}</h3>
+                                        <p><strong>Author:</strong> {book.author}</p>
+                                        <p><strong>Category:</strong> {book.category}</p>
+                                        <p><strong>Price:</strong> ${book.price}</p>
+                                        <button onClick={() => addToCart(book)}>Add to Cart</button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        )}
                     </>
                 )}
             </div>

@@ -3,26 +3,34 @@ import { useParams } from 'react-router-dom';
 
 const DetailsComponent = () => {
   const { id } = useParams();
-  const [movieDetails, setMovieDetails] = useState(null);
+  const [bookDetails, setBookDetails] = useState(null);
 
   useEffect(() => {
-    const fetchMovieDetails = async () => {
-      const response = await fetch(`https://www.omdbapi.com/?i=${id}&apikey=eafd305d`);
-      const data = await response.json();
-      setMovieDetails(data);
+    const fetchBookDetails = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/books/${id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch book details');
+        }
+        const data = await response.json();
+        setBookDetails(data);
+      } catch (error) {
+        console.error('Error fetching book details:', error);
+      }
     };
-    fetchMovieDetails();
+
+    fetchBookDetails();
   }, [id]);
 
   return (
-    <div className="details-container">
-      {movieDetails ? (
-        <div className="movie-details">
-          <img src={movieDetails.Poster} alt={movieDetails.Title} />
-          <h2>{movieDetails.Title}</h2>
-          <p><strong>Year:</strong> {movieDetails.Year}</p>
-          <p><strong>Plot:</strong> {movieDetails.Plot}</p>
-          <p><strong>Type:</strong> {movieDetails.Type ? movieDetails.Type : "Unknown"}</p>
+    <div className="details-container ">
+      {bookDetails ? (
+        <div className="book-details ">
+          <h2>{bookDetails.title}</h2>
+          <p><strong>Author:</strong> {bookDetails.author}</p>
+          <p><strong>Category:</strong> {bookDetails.category}</p>
+          <p><strong>Price:</strong> ${bookDetails.price}</p>
+          <p><strong>Quantity Available:</strong> {bookDetails.quantity}</p>
         </div>
       ) : (
         <p>Loading...</p>

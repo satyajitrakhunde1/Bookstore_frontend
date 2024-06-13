@@ -1,6 +1,6 @@
-// LoginComponent.js
+
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { UserContext } from '../App';
 import './styles.css';
 
@@ -12,15 +12,51 @@ const LoginComponent = () => {
     const navigate = useNavigate();
 
     const handleLogin = () => {
-        const users = JSON.parse(localStorage.getItem('users')) || {};
-        const storedUser = users[email];
+        setError('');
 
-        if (storedUser && storedUser.password === password) {
-            localStorage.setItem('currentUser', JSON.stringify({ email }));
-            setUser({ email });
+        // Check if the user is trying to login as admin
+        if (email === 'admin@gmail.com' && password === 'admin') {
+            // Set admin user in context or local storage
+            setUser({ email: 'admin@gmail.com', role: 'admin' });
+
+            // Redirect to admin dashboard or any admin-specific route
+            navigate('/admin/books');
+            return;
+        }
+
+        // If not admin, proceed with regular user login
+        loginUser(email, password);
+    };
+
+    const loginUser = async (email, password) => {
+        try {
+            if (!email || !password) {
+                throw new Error('Please fill in all fields');
+            }
+
+            const response = await fetch('http://localhost:5000/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.message || 'Login failed');
+            }
+
+            const data = await response.json();
+            const { token } = data; // Assuming your API response includes a token
+
+            // Store the user info and token in context or local storage
+            setUser({ email, token });
+
+            // Redirect to the search page or any other authorized route
             navigate('/search');
-        } else {
-            setError('Invalid email or password');
+        } catch (error) {
+            setError(error.message);
         }
     };
 
@@ -42,8 +78,10 @@ const LoginComponent = () => {
             />
             <button onClick={handleLogin}>Login</button>
             <p>
-                Don't have an account? <a href="/register">Register</a>
+                Don't have an account? <Link to="/register">Register</Link>
             </p>
+            <hr style={{color:"gray"}}/>
+            <p style={{color:"green"}}>Login as Admin (Email:admin@gmail.com ,Password: admin)</p>
         </div>
     );
 };
