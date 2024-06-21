@@ -8,7 +8,7 @@ const DetailsComponent = () => {
   useEffect(() => {
     const fetchBookDetails = async () => {
       try {
-        const response = await fetch(`https://bookstore-backend-j7tp.onrender.com/api/books/${id}`);
+        const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/books/${id}`);
         if (!response.ok) {
           throw new Error('Failed to fetch book details');
         }

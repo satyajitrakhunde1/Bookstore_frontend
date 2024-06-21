@@ -1,7 +1,5 @@
 
 
-// AdminCartComponent.js
-
 import React, { useState, useEffect, useContext } from 'react';
 import { UserContext } from '../App';
 
@@ -17,7 +15,7 @@ const AdminCartComponent = () => {
 
     const fetchCartList = async () => {
         try {
-            const response = await fetch('https://bookstore-backend-j7tp.onrender.com/api/cart/', {
+            const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/cart/`, {
                 headers: {
                     Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NjkxZmEzZTcyOGJiYzBlZWZjNTM0ZiIsImlhdCI6MTcxODI2MDkxOCwiZXhwIjoxNzIwODUyOTE4fQ.jIy3JlpMTh1rW50o06Ta00VSV_848gJlHCf80j6hq9E`
                 }

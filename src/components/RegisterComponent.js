@@ -12,7 +12,7 @@ const RegisterComponent = () => {
     const navigate = useNavigate();
 
     // Debugging environment variable
-    console.log('API URL:', process.env.REACT_APP_API_URL);
+    // console.log('API URL:', process.env.REACT_APP_API_URL);
 
     const handleRegister = async () => {
         if (!name || !email || !password) {
@@ -21,7 +21,7 @@ const RegisterComponent = () => {
         }
 
         try {
-            const response = await fetch('https://bookstore-backend-j7tp.onrender.com/api/auth/register', {
+            const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

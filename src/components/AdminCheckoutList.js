@@ -7,7 +7,7 @@ const AdminCheckoutList = () => {
     useEffect(() => {
         const fetchCheckoutList = async () => {
             try {
-                const response = await fetch('https://bookstore-backend-j7tp.onrender.com/api/checkout');
+                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/checkout`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch checkout list');
                 }

@@ -34,7 +34,7 @@ const LoginComponent = () => {
                 throw new Error('Please fill in all fields');
             }
 
-            const response = await fetch('https://bookstore-backend-j7tp.onrender.com/api/auth/login', {
+            const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

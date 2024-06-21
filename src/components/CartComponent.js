@@ -13,7 +13,7 @@ const CartComponent = () => {
     useEffect(() => {
         const fetchCartItems = async () => {
             try {
-                const response = await fetch('https://bookstore-backend-j7tp.onrender.com/api/cart', {
+                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/cart`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`
                     }
@@ -36,7 +36,7 @@ const CartComponent = () => {
 
     const addToCart = async (bookId) => {
         try {
-            const response = await fetch('https://bookstore-backend-j7tp.onrender.com/api/cart', {
+            const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/cart`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ const CartComponent = () => {
 
     const removeFromCart = async (itemId) => {
         try {
-            const response = await fetch(`https://bookstore-backend-j7tp.onrender.com/api/cart/${itemId}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/cart/${itemId}`, {
                 method: 'DELETE',
                 headers: {
                     Authorization: `Bearer ${user.token}`
