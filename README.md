@@ -247,4 +247,4 @@ Common Issues
 •	Invalid JWT Token: Verify that your JWT secret is correctly set and matches the one used for generating tokens.
 
 
-=====================================================================
+===================================================================== 
