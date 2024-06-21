@@ -95,7 +95,7 @@ Backend:
 Node.js
 Express.js
 MongoDB (with Mongoose)
-JSON Web Tokens (JWT) for authenticatio
+JSON Web Tokens (JWT) for authentication
 
 
 
